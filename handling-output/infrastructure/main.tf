@@ -7,10 +7,10 @@ resource "aws_ecr_repository" "repository" {
 ## Build docker images and push to ECR
 resource "docker_registry_image" "image" {
   for_each = toset(var.repository_list)
-  name     = "${aws_ecr_repository.repository[each.key].repository_url}:latest"
+  name     = "${aws_ecr_repository.repository[each.key].repository_url}:${data.external.git.result.value}"
 
   build {
-    context    = "../application"
+    context    = "${path.cwd}/application"
     dockerfile = "${each.key}.Dockerfile"
   }
 }
