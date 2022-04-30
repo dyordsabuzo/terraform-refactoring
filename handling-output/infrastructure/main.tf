@@ -1,7 +1,12 @@
 ## Create ECR repository
 resource "aws_ecr_repository" "repository" {
-  for_each = toset(var.repository_list)
-  name     = each.key
+  for_each             = toset(var.repository_list)
+  name                 = each.key
+  image_tag_mutability = "IMMUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 ## Build docker images and push to ECR
