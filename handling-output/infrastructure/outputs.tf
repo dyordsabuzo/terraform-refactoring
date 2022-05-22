@@ -3,9 +3,9 @@ output "images" {
 }
 
 output "worker_image_name" {
-  value = docker_registry_image.image["worker"].name
+  value = docker_registry_image.image[index(var.repository_list, "worker")].name
 }
 
 output "worker_image" {
-  value = docker_registry_image.image["worker"]
+  value = docker_registry_image.image[index(var.repository_list, "worker")]
 }

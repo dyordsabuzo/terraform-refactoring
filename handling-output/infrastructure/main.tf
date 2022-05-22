@@ -1,7 +1,7 @@
 ## Create ECR repository
 resource "aws_ecr_repository" "repository" {
-  for_each             = toset(var.repository_list)
-  name                 = each.key
+  count                = length(var.repository_list)
+  name                 = element(var.repository_list, count.index)
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -11,12 +11,12 @@ resource "aws_ecr_repository" "repository" {
 
 ## Build docker images and push to ECR
 resource "docker_registry_image" "image" {
-  for_each = toset(var.repository_list)
-  name     = "${aws_ecr_repository.repository[each.key].repository_url}:${data.external.git.result.value}"
+  count = length(var.repository_list)
+  name  = "${aws_ecr_repository.repository[count.index].repository_url}:${data.external.git.result.value}"
 
   build {
     context    = "${path.cwd}/application"
-    dockerfile = "${each.key}.Dockerfile"
+    dockerfile = "${element(var.repository_list, count.index)}.Dockerfile"
   }
 }
 
